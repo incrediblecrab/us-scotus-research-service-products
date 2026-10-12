@@ -23,7 +23,7 @@ CHANGES = ("added", "replaced", "updated", "delisted", "relisted")
 
 
 def open_store(args, collection, write=False):
-    """--local DIR keeps each category's repo in DIR/scotus-{category}, with each collection in its own directory; otherwise the category's Hub dataset. Hub reads are anonymous (token=False) unless the command writes."""
+    """--local DIR keeps each category's repo in DIR/us-scotus-{category}, with each collection in its own directory; otherwise the category's Hub dataset. Hub reads are anonymous (token=False) unless the command writes."""
     from .store import HubStore, LocalStore
 
     cards = {"card": render, "prefix": collection.prefix, "root_card": partial(render_category, collection.category)}
@@ -209,7 +209,7 @@ def main(argv=None):
     for command in ("run", "card", "verify", "list", "summarize"):
         p = sub.add_parser(command)
         p.add_argument("--dataset", required=True, choices=[*COLLECTIONS, ALL])
-        p.add_argument("--local", help="keep datasets in this directory (scotus-{category}/{collection}, as on the Hub) instead of on the Hub")
+        p.add_argument("--local", help="keep datasets in this directory (us-scotus-{category}/{collection}, as on the Hub) instead of on the Hub")
         p.add_argument("--workdir", help="scratch directory (default: the system's temporary directory)")
         p.add_argument("--workers", type=int, default=6, help="extraction threads")
         if command == "run":

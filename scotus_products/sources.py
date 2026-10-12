@@ -200,7 +200,7 @@ CATEGORIES = {
 
 
 def repo_id(category):
-    return f"{OWNER}/scotus-{category}"
+    return f"{OWNER}/us-scotus-{category}"
 
 
 @dataclass(frozen=True)

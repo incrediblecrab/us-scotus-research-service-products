@@ -475,7 +475,7 @@ def world(tmp_path, monkeypatch):
     site = Site(pages())
     monkeypatch.setattr(cases, "Fetcher", lambda: site)
     args = SimpleNamespace(local=str(tmp_path / "out"), sources_local=str(tmp_path / "sources"), terms=None, budget_minutes=0, workdir=str(tmp_path))
-    root = tmp_path / "out" / "scotus-cases"
+    root = tmp_path / "out" / "us-scotus-cases"
 
     def run(capsys):
         status = cases.cmd_run(args)

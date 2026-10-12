@@ -44,7 +44,7 @@ def test_run_then_verify_then_a_hand_edited_card_fails_until_rewritten(tmp_path,
     assert main("verify", *local, "--deep") == 0
     report = json.loads(capsys.readouterr().out)
     assert report["problems"] == [] and report["deep"]["rows_checked"] == 1
-    repo = tmp_path / "scotus-opinions"
+    repo = tmp_path / "us-scotus-opinions"
     assert sorted(str(p.relative_to(repo)) for p in repo.rglob("*") if p.is_file()) == ["README.md", f"{NAME}/README.md", f"{NAME}/data/OT2023.parquet", f"{NAME}/manifest.json"]
     for card, problem in ((repo / NAME / "README.md", f"{NAME}/README.md is not the card the manifest renders"), (repo / "README.md", "README.md is not the category card the collections' manifests render")):
         card.write_text(card.read_text().replace("byte for byte", "byte-for-byte"))
@@ -122,12 +122,12 @@ def test_summarize_counts_a_summary_written_before_a_new_count_and_leaves_a_curr
     local = ["--dataset", NAME, "--local", str(tmp_path), "--workdir", str(tmp_path)]
     assert main("run", *local) == 0
     capsys.readouterr()
-    path = tmp_path / "scotus-opinions" / NAME / "manifest.json"
+    path = tmp_path / "us-scotus-opinions" / NAME / "manifest.json"
     manifest = json.loads(path.read_text())
     (key, entry), = manifest["partitions"].items()
     counted = entry.pop("codepoints")
     path.write_text(json.dumps(manifest))
-    assert main("card", *local, "--write") == 0 and "not yet counted in 1 partition" in (tmp_path / "scotus-opinions" / NAME / "README.md").read_text()
+    assert main("card", *local, "--write") == 0 and "not yet counted in 1 partition" in (tmp_path / "us-scotus-opinions" / NAME / "README.md").read_text()
     assert main("summarize", *local) == 0 and json.loads(capsys.readouterr().out)["changed"] == {key: ["codepoints"]}
     assert json.loads(path.read_text())["partitions"][key]["codepoints"] == counted
     assert main("summarize", *local) == 0 and json.loads(capsys.readouterr().out)["changed"] == {}
@@ -139,7 +139,7 @@ def test_card_write_on_the_hub_authenticates_and_a_card_to_print_does_not(monkey
 
     class Hub:
         def __init__(self, repo_id, workdir=None, token=None, card=None, prefix="", root_card=None):
-            assert repo_id == "incrediblecrab/scotus-opinions" and prefix == f"{NAME}/" and root_card is not None
+            assert repo_id == "incrediblecrab/us-scotus-opinions" and prefix == f"{NAME}/" and root_card is not None
             tokens.append(token)
 
         def read_manifest(self):
@@ -191,7 +191,7 @@ def test_a_run_on_actions_names_each_repo_for_trusted_publishing_keeps_a_reserve
     assert main("run", "--dataset", "all", "--total-budget-minutes", "100", "--reserve-minutes", "5") == 0
     capsys.readouterr()
     assert [(name, resource) for name, _, resource, _ in seen] == [(name, f"datasets/{repo}") for name, repo, _, _ in seen]
-    assert {repo for _, repo, _, _ in seen} == {"incrediblecrab/scotus-opinions", "incrediblecrab/scotus-oral-arguments", "incrediblecrab/scotus-case-documents", "incrediblecrab/scotus-news-media", "incrediblecrab/scotus-filing-and-rules", "incrediblecrab/scotus-about"}
+    assert {repo for _, repo, _, _ in seen} == {"incrediblecrab/us-scotus-opinions", "incrediblecrab/us-scotus-oral-arguments", "incrediblecrab/us-scotus-case-documents", "incrediblecrab/us-scotus-news-media", "incrediblecrab/us-scotus-filing-and-rules", "incrediblecrab/us-scotus-about"}
     assert [deadline for *_, deadline in seen] == [1000 + 100 * 60 - (len(seen) - 1 - index) * 5 * 60 for index in range(len(seen))]
     assert output.read_text() == f"more=true\nmore_collections=us-reports\nchanged_collections=orders-by-circuit,journal\ncommits={2 * len(seen)}\nfetched={len(seen)}\n"
     monkeypatch.delenv("GITHUB_ACTIONS")

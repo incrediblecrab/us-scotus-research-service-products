@@ -1,6 +1,6 @@
 # cases fixtures
 
-Docket and argument audio pages from www.supremecourt.gov, saved September 27, 2026, as served, for `test_cases.py`. `dk_23-1197.html` is the page as a build of scotus-cases stored it in its `docket_html` column; a docket page's bytes change whenever the Court adds an entry, so a fresh copy may differ.
+Docket and argument audio pages from www.supremecourt.gov, saved September 27, 2026, as served, for `test_cases.py`. `dk_23-1197.html` is the page as a build of us-scotus-cases stored it in its `docket_html` column; a docket page's bytes change whenever the Court adds an entry, so a fresh copy may differ.
 
 Every page but the not-found page loads Akamai's boomerang script with the site's beacon key, `window.BOOMR_API_key`, a public value served to every visitor. gitleaks 8.30.1 reports it as a generic API key: 8 findings in 7 files (`docketfiles_05-1.htm` holds two). It is no credential of this project; the pages stay as served.
 

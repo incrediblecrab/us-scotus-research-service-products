@@ -28,7 +28,7 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  # Assembles incrediblecrab/scotus-cases from the document datasets as the Hub holds them, so its rows reflect the documents as of the previous run, and from the docket pages due for a check. It runs before sync rather than beside it, so the two never ask the Court for pages at once: robots.txt sets Crawl-delay: 1, and the Fetcher paces requests within one process. Its failure does not hold back the sync.
+  # Assembles incrediblecrab/us-scotus-cases from the document datasets as the Hub holds them, so its rows reflect the documents as of the previous run, and from the docket pages due for a check. It runs before sync rather than beside it, so the two never ask the Court for pages at once: robots.txt sets Crawl-delay: 1, and the Fetcher paces requests within one process. Its failure does not hold back the sync.
   cases:
     # A scheduled run has no inputs, and null compares equal to '0' in an expression, so the default is filled in first.
     if: ${{ !inputs.args && (inputs.cases_budget_minutes || '60') != '0' }}
