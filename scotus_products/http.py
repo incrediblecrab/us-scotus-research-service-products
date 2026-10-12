@@ -9,7 +9,7 @@ from urllib.parse import urlsplit
 
 import httpx
 
-USER_AGENT = "scotus-research-service-products/0.1 (+https://github.com/incrediblecrab/scotus-research-service-products)"
+USER_AGENT = "us-scotus-research-service-products/0.1 (+https://github.com/incrediblecrab/us-scotus-research-service-products)"
 HOST_INTERVAL = {"www.supremecourt.gov": 1.1, "supremecourt.gov": 1.1}
 DEFAULT_INTERVAL = 1.1
 DISALLOWED = ("/images/", "/rss/", "/cdn/")

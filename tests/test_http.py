@@ -39,7 +39,7 @@ def test_requests_identify_the_pipeline_and_redirects_are_not_followed():
     response = fetcher_with(handler, intervals={"www.supremecourt.gov": 0}).get("https://www.supremecourt.gov/opinions/slipopinion/10")
     assert response.status_code == 302
     assert len(seen) == 1 and seen[0].headers["user-agent"] == USER_AGENT
-    assert "github.com/incrediblecrab/scotus-research-service-products" in USER_AGENT
+    assert "github.com/incrediblecrab/us-scotus-research-service-products" in USER_AGENT
 
 
 def test_requests_to_a_host_are_paced():

@@ -6,7 +6,7 @@ from .pipeline import MAX_ATTEMPTS, RETRY_AFTER_HOURS
 from .sources import CATEGORIES, COLLECTIONS, repo_id as category_repo
 from .store import SCHEMA
 
-GITHUB = "https://github.com/incrediblecrab/scotus-research-service-products"
+GITHUB = "https://github.com/incrediblecrab/us-scotus-research-service-products"
 COLUMN_DOCS = {
     "id": "The file's path on www.supremecourt.gov, percent-decoded and lower-cased, without the leading slash (the site ignores case). One row per file",
     "partition": "The Parquet file that holds the row (`data/{partition}.parquet`), assigned when the row was first stored and never changed",
@@ -248,7 +248,7 @@ def render(manifest):
         "",
         "## How it is updated",
         "",
-        "The pipeline reads every listing page of the collection, fetches files it has not stored, updates the listing fields of files whose entries changed, and marks files that are no longer listed. Requests are paced to at least 1.1 seconds apart, as the site's robots.txt asks (Crawl-delay: 1), with the user agent `scotus-research-service-products` and a link to the repository.",
+        "The pipeline reads every listing page of the collection, fetches files it has not stored, updates the listing fields of files whose entries changed, and marks files that are no longer listed. Requests are paced to at least 1.1 seconds apart, as the site's robots.txt asks (Crawl-delay: 1), with the user agent `us-scotus-research-service-products` and a link to the repository.",
         "",
         "## License",
         "",

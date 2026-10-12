@@ -3,7 +3,7 @@ requires = ["setuptools>=77"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "scotus-research-service-products"
+name = "us-scotus-research-service-products"
 version = "0.1.0"
 description = "Builds and keeps current verbatim Hugging Face datasets of the documents the Supreme Court of the United States publishes on www.supremecourt.gov."
 readme = "README.md"
