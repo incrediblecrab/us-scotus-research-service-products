@@ -282,7 +282,7 @@ def test_low_disk_stops_before_downloading(tmp_path, two_files):
 
 def test_another_writers_fresh_lease_defers_the_run(tmp_path, two_files):
     units, site = two_files
-    _, store = run(tmp_path, FakeListing(units), site)
+    _, store = run(tmp_path, FakeListing(units), site, writer="local")
     record, _ = run(tmp_path, FakeListing(units), site, writer="github-actions")
     assert record["stopped"] == "deferred"
 
