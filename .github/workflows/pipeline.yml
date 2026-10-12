@@ -32,7 +32,7 @@ jobs:
   cases:
     # A scheduled run has no inputs, and null compares equal to '0' in an expression, so the default is filled in first.
     if: ${{ !inputs.args && (inputs.cases_budget_minutes || '60') != '0' }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 355
     permissions:
       contents: read
@@ -70,7 +70,7 @@ jobs:
   sync:
     needs: cases
     if: ${{ !cancelled() }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     # GitHub stops a hosted job at 360 minutes; the default budget of 290 leaves room for setup, the commits after the budget runs out, and verify.
     timeout-minutes: 355
     permissions:
@@ -133,7 +133,7 @@ jobs:
   continue:
     needs: [cases, sync]
     if: ${{ !cancelled() && !inputs.args && ((needs.sync.outputs.more == 'true' && needs.sync.outputs.fetched != '0') || (needs.cases.outputs.more == 'true' && needs.cases.outputs.fetched != '0')) }}
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:
       actions: write
@@ -147,7 +147,7 @@ jobs:
   # GitHub disables schedules in a public repository after 60 days without repository activity. This job makes no commit to prevent that: GitHub called keepalive commits a violation of its Terms for circumventing that policy (https://github.com/ddev/github-action-add-on-test/issues/46). Instead it fails once the last commit is 50 days old, so GitHub notifies the user who last changed the cron, who can push one. It runs on every scheduled run, because GitHub starts scheduled runs late or drops them. The log names the schedule that started the run.
   inactivity:
     if: github.event_name == 'schedule'
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
     permissions:
       contents: read
