@@ -307,6 +307,24 @@ def test_listing_takes_nothing_from_a_term_page_whose_entries_are_another_terms(
     assert head["entries"] == 31 and {entry["term"] for unit in units.values() for entry in unit.entries} == {2023}
 
 
+@pytest.mark.parametrize("recovered", [True, False])
+def test_listing_rereads_a_page_that_lists_nothing(recovered):
+    # On October 14, 2026 orders/ordersofthecourt/13 listed nothing, which stopped the collection; the next day it listed its 145 entries.
+    url = BASE + "orders/ordersofthecourt/25"
+    empty = b"<div id='pagemaindiv'><b>Term Year: 2025</b><table></table></div>"
+    answers = {url: Response(200, empty), reread_url(url): Response(200, page_bytes("orders_ordersofthecourt_25") if recovered else empty)}
+    site, asked = Pages(answers), []
+    get = site.get
+    site.get = lambda page: asked.append(page) or get(page)
+    listing = Listing(COLLECTIONS["orders-of-the-court"], site, today=TODAY)
+    _, units = listing.list_all()
+    if recovered:
+        assert listing.pages[url] == {"term": 2025, "entries": 117, "reread_reason": "no entries"} and len(units) == 117
+    else:
+        assert listing.pages[url] == {"term": 2025, "entries": 0} and units == {}
+    assert asked.count(reread_url(url)) == 1
+
+
 def test_reread_url_adds_a_query_string():
     assert reread_url(BASE + "oral_arguments/argument_audio/2017") == BASE + "oral_arguments/argument_audio/2017?reread=1"
     assert reread_url(BASE + "x.aspx?term=2017") == BASE + "x.aspx?term=2017&reread=1"

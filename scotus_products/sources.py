@@ -972,6 +972,10 @@ class Listing:
                 raise ListingError(f"{url}: {error}") from error
             entries, shown, by = self.page(main, url, term)
             unlinked = self.unlinked_opinions(main, term) if not entries and not shown else 0
+            empty = not entries and not shown and not unlinked
+            if empty:
+                # An empty copy from the site's CDN: on October 14, 2026 orders/ordersofthecourt/13 listed nothing, which stopped the collection, and the next day it listed its 145 entries. Read once past the cache; pipeline.check_listing still stops the run if that is empty too.
+                entries = self.reread(url, term) or entries
             if shown:
                 entries = self.reread(url, term)
                 if entries is None:
@@ -987,6 +991,8 @@ class Listing:
             self.pages[url] = {"term": term, "entries": len(entries)} | ({"reread": shown, "shown_by": by} if shown else {})
             if unlinked:
                 self.pages[url]["reread_reason"] = "opinion rows without document links"
+            elif empty and entries:
+                self.pages[url]["reread_reason"] = "no entries"
             found += entries
         units = group_units(found)
         head = {"count": len(units), "entries": len(found), "pages": len(self.pages)}

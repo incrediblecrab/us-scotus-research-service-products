@@ -191,11 +191,15 @@ def check_listing(base, pages):
 
 
 def held_pages(base, pages):
-    """Previously populated pages showing another term or recognizable historical opinion rows without links. Keep stored rows, suppress delisting, skip partitions with no observed files, and retain the last complete listing."""
+    """Previously populated pages showing another term or recognizable historical opinion rows without links. Keep stored rows, suppress delisting, skip partitions with no observed files, and retain the last complete listing.
+
+    A page of unlinked opinion rows is not held where its term's partition is recorded with no rows: the hold protects stored files, and there are none. relatingtoorders/05 lost the 5 links of the last complete listing (every one answered 404, so none was stored), and holding it kept the collection from publishing a listing from September 29 to October 15, 2026."""
     before = ((base or {}).get("listing") or {}).get("pages") or {}
+    stored = (base or {}).get("partitions") or {}
     held = []
     for url, page in sorted(pages.items()):
-        if page.get("unlinked_rows") and (before.get(url) or {}).get("entries"):
+        nothing_stored = (stored.get(f"OT{page.get('term')}") or {}).get("rows") == 0
+        if page.get("unlinked_rows") and (before.get(url) or {}).get("entries") and not nothing_stored:
             held.append(f"{url} has {page['unlinked_rows']} opinion rows but no document links after a re-read; what the last complete listing found there ({before[url]['entries']} entries) is left as it is")
         if page.get("shown_term") and (before.get(url) or {}).get("entries"):
             by = " by its entries' dates" if page.get("shown_by") == "dates" else ""

@@ -180,6 +180,29 @@ def test_unlinked_historical_opinions_preserve_rows_and_allow_new_terms(tmp_path
     assert not record.get("held") and store.read_manifest()["held"] == []
 
 
+@pytest.mark.parametrize("partition, held", [(None, True), ({"rows": 3}, True), ({"rows": 0}, False)], ids=["no-partition", "stored-rows", "nothing-stored"])
+def test_unlinked_opinions_are_held_only_where_a_term_may_have_stored_files(partition, held):
+    url = BASE + "opinions/relatingtoorders/05"
+    base = {"listing": {"pages": {url: {"term": 2005, "entries": 5}}}, "partitions": {} if partition is None else {"OT2005": partition}}
+    pages = {url: {"term": 2005, "entries": 0, "unlinked_rows": 7}}
+    assert bool(held_pages(base, pages)) is held
+
+
+def test_a_term_with_nothing_stored_is_not_held_when_its_links_go(tmp_path, born_digital):
+    # relatingtoorders/05 listed 5 files that answered 404, then lost its links; holding it kept the collection's listing at September 29, 2026 and its 5 failures retried daily.
+    url = BASE + "test/05"
+    dead = unit("opinions/05pdf/a.pdf", partition="OT2005", term=2005)
+    site = FakeSite({})
+    record, store = run(tmp_path, FakeListing([dead], pages={url: {"term": 2005, "entries": 1}}), site)
+    manifest = store.read_manifest()
+    assert record["failed"] == 1 and manifest["partitions"]["OT2005"]["rows"] == 0 and dead.id in manifest["failures"]
+    gone = {url: {"term": 2005, "entries": 0, "unlinked_rows": 7}}
+    record, store = run(tmp_path, FakeListing([], pages=gone), site)
+    manifest = store.read_manifest()
+    assert record["finished"] and not record.get("held") and manifest["held"] == []
+    assert manifest["listing"]["pages"] == gone and dead.id not in manifest["failures"]
+
+
 def test_the_next_whole_listing_undoes_one_that_took_another_terms_entries(tmp_path, born_digital, scanned):
     # On September 27, 2026 a run took orders/ordersbycircuit/22 listing the October Term 2023 orders: it delisted the 2022 files, and each 2023 file, now linked from both pages, took term 2022 from its first entry.
     old, new = unit("orders/22/a.pdf", partition="OT2022", term=2022), unit("orders/23/b.pdf", partition="OT2023", term=2023)
